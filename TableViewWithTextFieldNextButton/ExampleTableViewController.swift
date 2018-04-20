@@ -11,17 +11,15 @@ import UIKit
 class ExampleTableViewController: UITableViewController, ExampleTableViewCellDelegate {
     
     let names = [
-        "Allen","Upton","Hu","Yuli","Tiger","Flynn","Lev","Kyle","Sylvester","Mohammad",
-        "Harlan","Julian","Sebastian","Porter","Preston","Palmer","Jakeem","Micah","Stephen","Tucker"
+        "Allen","Upton","Hu","Yuli","Tiger","Flynn","Lev","Kyle","Sylvester","Mohammad"
     ]
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        return 2
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -34,6 +32,10 @@ class ExampleTableViewController: UITableViewController, ExampleTableViewCellDel
         cell.delegate = self
         cell.indexPath = indexPath
         return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return "Section \(section)"
     }
     
     // MARK: - ExampleTableViewCellDelegate

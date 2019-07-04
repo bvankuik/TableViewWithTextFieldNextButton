@@ -107,6 +107,9 @@ extension UITableView {
         return nil
     }
     
+    // As per CC BY-SA 3.0 license, the code below was created by:
+    // https://stackoverflow.com/users/1294448/bishal-ghimire
+    // Source: https://stackoverflow.com/a/56867271
     func previousIndexPath(for currentIndexPath: IndexPath) -> IndexPath? {
         let startRow = currentIndexPath.row
         let startSection = currentIndexPath.section

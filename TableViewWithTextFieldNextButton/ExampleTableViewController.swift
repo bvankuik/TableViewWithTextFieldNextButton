@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ExampleTableViewController: UITableViewController, ExampleTableViewCellDelegate {
+class ExampleTableViewController: UITableViewController {
     private var counter = 0
     private let names = [
         "Allen","Upton","Hu","Yuli","Tiger","Flynn","Lev","Kyle","Sylvester","Mohammad",
@@ -30,12 +30,11 @@ class ExampleTableViewController: UITableViewController, ExampleTableViewCellDel
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ExampleTableViewCell", for: indexPath) as! ExampleTableViewCell
         cell.label.text = self.names[indexPath.row]
-        cell.delegate = self
-        cell.indexPath = indexPath
-        cell.handlerBlock = { [weak self] in
-            // As an alternative to a delegate, you can use a handler.
-            self?.counter += 1
-            print("nextButtonHandler: \(self?.counter ?? 0)")
+        cell.nextHandlerBlock = { [weak self] in
+            self?.focusNextTextField(originCell: cell, in: tableView, from: indexPath)
+        }
+        cell.previousHandlerBlock = { [weak self] in
+            self?.focusPreviousTextField(originCell: cell, in: tableView, from: indexPath)
         }
         return cell
     }
@@ -44,27 +43,37 @@ class ExampleTableViewController: UITableViewController, ExampleTableViewCellDel
         return "Section \(section)"
     }
     
-    // MARK: - ExampleTableViewCellDelegate
-    
-    func exampleTableViewCell(_ cell: ExampleTableViewCell, didReturnFromEditingAt indexPath: IndexPath) {
-        NSLog("Did return from editing at \(indexPath)")
-        
+    // MARK: - Private functions
+
+    private func focusPreviousTextField(originCell cell: UITableViewCell, in tableView: UITableView, from indexPath: IndexPath) {
         guard let currentIndexPath = self.tableView.indexPath(for: cell) else {
             // This can happen when the user scrolled after editing, but before tapping Next button
             self.tableView.scrollToRow(at: indexPath, at: .bottom, animated: false)
             return
         }
         
-        guard let nextIndexPath = self.nextIndexPath(for: currentIndexPath, in: self.tableView) else {
+        guard let previousIndexPath = tableView.previousIndexPath(for: currentIndexPath) else {
             return
         }
         
-        self.focusResultTextField(on: nextIndexPath)
+        self.animateFocus(on: previousIndexPath)
+    }
+
+    private func focusNextTextField(originCell cell: UITableViewCell, in tableView: UITableView, from indexPath: IndexPath) {
+        guard let currentIndexPath = self.tableView.indexPath(for: cell) else {
+            // This can happen when the user scrolled after editing, but before tapping Next button
+            self.tableView.scrollToRow(at: indexPath, at: .bottom, animated: false)
+            return
+        }
+        
+        guard let nextIndexPath = tableView.nextIndexPath(for: currentIndexPath) else {
+            return
+        }
+        
+        self.animateFocus(on: nextIndexPath)
     }
     
-    // MARK: - Private functions
-    
-    private func focusResultTextField(on indexPath: IndexPath) {
+    private func animateFocus(on indexPath: IndexPath) {
         UIView.animate(withDuration: 0.2, animations: {
             self.tableView.scrollToRow(at: indexPath, at: .none, animated: false)
         }, completion: { (finished) in
@@ -74,15 +83,17 @@ class ExampleTableViewController: UITableViewController, ExampleTableViewCellDel
             }
         })
     }
-    
-    private func nextIndexPath(for currentIndexPath: IndexPath, in tableView: UITableView) -> IndexPath? {
+}
+
+extension UITableView {
+    func nextIndexPath(for currentIndexPath: IndexPath) -> IndexPath? {
         var nextRow = 0
         var nextSection = 0
         var iteration = 0
         var startRow = currentIndexPath.row
-        for section in currentIndexPath.section ..< tableView.numberOfSections {
+        for section in currentIndexPath.section ..< self.numberOfSections {
             nextSection = section
-            for row in startRow ..< tableView.numberOfRows(inSection: section) {
+            for row in startRow ..< self.numberOfRows(inSection: section) {
                 nextRow = row
                 iteration += 1
                 if iteration == 2 {
@@ -94,5 +105,24 @@ class ExampleTableViewController: UITableViewController, ExampleTableViewCellDel
         }
         
         return nil
+    }
+    
+    func previousIndexPath(for currentIndexPath: IndexPath) -> IndexPath? {
+        let startRow = currentIndexPath.row
+        let startSection = currentIndexPath.section
+        
+        var previousRow = startRow
+        var previousSection = startSection
+        
+        if startRow == 0 && startSection == 0 {
+            return nil
+        } else if startRow == 0 {
+            previousSection -= 1
+            previousRow = self.numberOfRows(inSection: previousSection) - 1
+        } else {
+            previousRow -= 1
+        }
+        
+        return IndexPath(row: previousRow, section: previousSection)
     }
 }

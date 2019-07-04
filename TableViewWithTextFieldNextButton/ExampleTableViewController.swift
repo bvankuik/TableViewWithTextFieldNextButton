@@ -9,8 +9,8 @@
 import UIKit
 
 class ExampleTableViewController: UITableViewController, ExampleTableViewCellDelegate {
-    
-    let names = [
+    private var counter = 0
+    private let names = [
         "Allen","Upton","Hu","Yuli","Tiger","Flynn","Lev","Kyle","Sylvester","Mohammad",
         "Harlan","Julian","Sebastian","Porter","Preston","Palmer","Jakeem","Micah","Stephen","Tucker"
     ]
@@ -33,6 +33,11 @@ class ExampleTableViewController: UITableViewController, ExampleTableViewCellDel
         cell.label.text = self.names[indexPath.row]
         cell.delegate = self
         cell.indexPath = indexPath
+        cell.handlerBlock = { [weak self] in
+            // As an alternative to a delegate, you can use a handler.
+            self?.counter += 1
+            print("nextButtonHandler: \(self?.counter ?? 0)")
+        }
         return cell
     }
     

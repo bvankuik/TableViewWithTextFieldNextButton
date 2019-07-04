@@ -20,6 +20,7 @@ class ExampleTableViewCell: UITableViewCell, UITextFieldDelegate {
     
     var delegate: ExampleTableViewCellDelegate?
     var indexPath: IndexPath?
+    var handlerBlock: () -> Void = {}
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -31,6 +32,7 @@ class ExampleTableViewCell: UITableViewCell, UITextFieldDelegate {
         if let indexPath = self.indexPath {
             self.delegate?.exampleTableViewCell(self, didReturnFromEditingAt: indexPath)
         }
+        self.handlerBlock()
         return true
     }
 

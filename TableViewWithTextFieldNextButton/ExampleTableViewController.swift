@@ -17,11 +17,10 @@ class ExampleTableViewController: UITableViewController, ExampleTableViewCellDel
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        return 2
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -39,6 +38,10 @@ class ExampleTableViewController: UITableViewController, ExampleTableViewCellDel
             print("nextButtonHandler: \(self?.counter ?? 0)")
         }
         return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return "Section \(section)"
     }
     
     // MARK: - ExampleTableViewCellDelegate
